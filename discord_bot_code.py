@@ -35,14 +35,14 @@ from discord import interactions
 import random
 
 # For Pokemon API
-import pokemontcgsdk
-from pokemontcgsdk import RestClient
-from pokemontcgsdk import Card
-from pokemontcgsdk import Set
-from pokemontcgsdk import Type
-from pokemontcgsdk import Supertype
-from pokemontcgsdk import Subtype
-from pokemontcgsdk import Rarity
+#import pokemontcgsdk
+#from pokemontcgsdk import RestClient
+#from pokemontcgsdk import Card
+#from pokemontcgsdk import Set
+#from pokemontcgsdk import Type
+#from pokemontcgsdk import Supertype
+#from pokemontcgsdk import Subtype
+#from pokemontcgsdk import Rarity
 
 
 # For testing
@@ -78,14 +78,6 @@ with open("insults.txt", "r") as f:
 #with open("API_KEY.txt", "r") as f:
     #API_KEY = f.read()
     #RestClient.configure(API_KEY)
-
-#%% 
-
-# Testing
-
-with open('standard11_4.pkl', 'rb') as file:
-    standard_cards = pickle.load(file)
-
 
 
 #%%
@@ -304,99 +296,6 @@ async def getqrcodes(ctx, codes_for_qr: str): # interaction: discord.Interaction
 
 
 #%%
-# Time to use the API
-
-# Initializing
-standard_only = 'legalities.standard:legal'
-#standard_cards = Card.where(q=f'{standard_only}')
-
-
-
-@bot.hybrid_command(name = "eevee", description = "Test for API images")
-#@app_commands.describe(eevee = "test_card")
-async def eevee(ctx):
-
-    embed = create_Poke_embed(test_card)
-
-    await ctx.send(embed = embed)
-
-
-@bot.hybrid_command(name = "search", description = "Search for Pokemon cards based on criteria (Standard Only)")
-@app_commands.describe(name = "name of card", 
-                       hp = "amount of hp", 
-                       rule_box = "To search for a specific line of text in the rule")
-async def search(ctx, name=None, hp = None, rule_box = None):
-    #print('recieved')
-
-    if all(var == None for var in[name, hp, rule_box]):
-        await ctx.send("You passed no values to search from, do you want my ass to tell you every card?!")
-        return
-    
-    embed_list = []
-
-    if all(var == None for var in[name, hp]):
-        #print('setting standard')
-        cards = standard_cards
-
-    else:
-
-        if name == None:
-            name_check = ''
-        else:
-            name_check = f' name:"{name}"'
-
-
-        if hp == None:
-            hp_check = ''
-        else:
-            hp_check = f' hp:{hp}'
-        
-        string_for_search = f'{standard_only}{name_check}{hp_check}'
-        print(string_for_search)
-
-        cards = Card.where(q=string_for_search, orderBy='-set.releaseDate')
-
-    if rule_box != None:
-
-        temp_cards = []
-
-        for i in cards:
-            card_S = vars(i)
-
-            if card_S['abilities'] != None:
-
-                ability = vars(card_S['abilities'][0])
-
-                if rule_box.lower() in ability['text'].lower():
-                    
-                    temp_cards.append(i)
-
-        cards = temp_cards
-
-
-
-    if len(cards) > 35: 
-        await ctx.send(f"That's {len(cards)} cards, I am not doing all that")
-    
-    else:
-        for card in cards:
-
-            embed = create_Poke_embed(card)
-            #print(embed)
-
-            embed_list.append(embed)
-
-    #Splitting list (Discord can only have 10 embeds)
-
-    embed_list = [embed_list[i:i + 10] for i in range(0,len(embed_list), 10)]
-
-    for i in embed_list:
-        await ctx.send(embeds = i)
-
-
-
-
-#%%
 
 # Make decks and record combat logs
 # New Feature v3
@@ -488,27 +387,6 @@ async def record_combat(ctx, deck, opponent_deck, previous_message = True, versi
             await ctx.send(f"Error: {e}")
 
 
-
-
-
-
-#%%
-
-@bot.command()
-async def hello(ctx):
-    await ctx.send("Hello!")
-
-@bot.command()
-async def dillan(ctx):
-    channel = bot.get_channel(927084176824483922)
-    dillan_id = 97419266843746304
-    await channel.send(f"<@{97419266843746304}>, {random.choice(insults)}")
-
-@bot.command()
-async def preston(ctx):
-    channel = bot.get_channel(927084176824483922)
-    dillan_id = 97419266843746304
-    await channel.send(f"<@{97419266843746304}>, {random.choice(insults)}")
 
 
 
@@ -695,58 +573,6 @@ async def GetQR(ctx, *, arr, description = "Creates QR codes"):
     # Reset images for the next QR chunk
 
             
-
-
-
-#%% Playground
-
-
-# channel_id = 1347781687160999966
-# @bot.hybrid_command(name = "write", description = "Test for API images")
-# async def write(ctx):
- 	
-
-#     embed = discord.Embed(
-#         colour = 0xe4ef14 ,
-#         #description = ''
-#         title = 'WRATHFUL CARNATION'
-#     )
-
-        
-#     # url = vars(card_dict['tcgplayer'])['url']
-#     # Getting tcgplayer url for embed url
-        
-#     #poke_image = vars(card_dict['images'])['large']
-#     # Set the pokemon card image
-
-
-#     embed.set_thumbnail(url = 'https://cdn.discordapp.com/attachments/1278115424696799272/1347808884479229992/image.png?ex=67cd2c57&is=67cbdad7&hm=7a6627c8739f552ed82661a08c9ba8af813a17725c5c7aac2534386850e0a411&')
-#     # Setting thumbnail as set logo
-
-#     embed.set_image(url = 'https://cdn.discordapp.com/attachments/1278115424696799272/1347808982810628126/image.png?ex=67cd2c6e&is=67cbdaee&hm=70ff33af26d2a666042513107b9a5afeb5db7ba932e43e2ea428a82e073a28ea&')
-        
-
-#     embed.set_footer(text = "Despite their beauty, its yellow flowers emit an irritatingly pungent smell.")
-
-#     #embed.add_field(name = 'Effect [0 - 1]', value = 'You are Resistant to earth and ice damage')
-#     #embed.add_field(name = 'Effect [2 - 3]', value = 'You and your allies present on the scene are Resistant to earth and ice damage')
-
-    
-#     embed.add_field(name = 'Clock', 
-#                     value = """
-#                     **1-4**
-
-#                     """)
-    
-#     embed.add_field(name = 'Effect', 
-#                     value = """
-#                     When this **magiseed** leaves your **garden**, choose up to one enemy you can see. Until the end of your next turn, when the chosen enemy performs an attack or casts an offensive spell (:zap:), they must include you among the targets of that attack of spell (if able). 
-#                     At the end of your turn, you may remove this **magiseed** from your **garden**; if you do, erase **all** sections of your Growth Clock.
-#                     """)
-    
-#     await ctx.send(embed = embed)
-  
-                
 
 
 
